@@ -129,11 +129,37 @@ function clearConversionInputs() {
 }
 
 // Clear all input fields in the arithmetic section
+// function clearArithmeticInputs() {
+//     document.querySelectorAll(".numberInput").forEach(input => input.value = "");
+//     document.getElementById("arithmeticResult").textContent = "--";
+//     let inputField = document.createElement("input");
+//     inputField.type = "text";
+//     inputField.placeholder = "Enter number";
+//     inputField.classList.add("numberInput");
+// }
+
+// Clear all input fields in the arithmetic section, keeping only the initial one
 function clearArithmeticInputs() {
-    document.querySelectorAll(".numberInput").forEach(input => input.value = "");
-    document.getElementById("arithmeticResult").textContent = "--";
-    let inputField = document.createElement("input");
+    // Select all dynamically added input fields and remove them
+    const numberInputsDiv = document.getElementById("numberInputs");
+    numberInputsDiv.innerHTML = ""; // Clear all inputs
+
+    // Re-create the original input field
+    const inputField = document.createElement("input");
     inputField.type = "text";
     inputField.placeholder = "Enter number";
     inputField.classList.add("numberInput");
+
+    // Append the original input field back to the container
+    numberInputsDiv.appendChild(inputField);
+
+    // Add back the "Add Another Number" button
+    const addButton = document.createElement("button");
+    addButton.classList.add("add-number-button");
+    addButton.textContent = "Add Another Number";
+    addButton.onclick = addNumberInput;
+    numberInputsDiv.appendChild(addButton);
+
+    // Clear the result display
+    document.getElementById("arithmeticResult").textContent = "--";
 }
