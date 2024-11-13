@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Fonts Link -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- Fonts Link -->
+    <title>Base Converter & Arithmetic Calculator || JHS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Base Converter & Arithmetic Calculator</h1>
+
+    <div class="container">
+
+        <!-- Base Conversion Section -->
+        <div class="section" id="conversion-section">
+            <h2>Base Conversion</h2>
+            <label>Input Number:</label>
+            <input type="text" id="inputNumber" placeholder="Enter number" oninput="convertBase()">
+            
+            <label>Input Base:</label>
+            <input type="number" id="inputBase" min="2" max="36" value="10" >
+            
+            <label>Output Base:</label>
+            <input type="number" id="outputBase" min="2" max="36" value="16" >
+            
+            <button onclick="convertBase()">Convert</button>
+            <button onclick="clearConversionInputs()">Clear</button>
+            
+            <h3>Converted Value:</h3>
+            <p class="result" id="convertedOutput">--</p>
+            
+            <h3>Universal Conversion Table:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Binary</th>
+                        <th>Octal</th>
+                        <th>Decimal</th>
+                        <th>Hexadecimal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="conversionTable">
+                        <td>--</td><td>--</td><td>--</td><td>--</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Arithmetic Section -->
+        <div class="section" id="arithmetic-section">
+            <h2>Arithmetic Operations</h2>
+            <label>Operation:</label>
+            <select id="operation">
+                <option value="add">Addition</option>
+                <option value="subtract">Subtraction</option>
+                <option value="multiply">Multiplication</option>
+                <option value="divide">Division</option>
+            </select>
+
+            <label>Base:</label>
+            <input type="number" id="arithmeticBase" min="2" max="36" value="10">
+
+            <div id="numberInputs">
+                <input type="text" placeholder="Enter number" class="numberInput">
+                <button class="add-number-button" onclick="addNumberInput()">Add Another Number</button>
+            </div>
+
+            <button onclick="calculate()">Calculate</button>
+            <button onclick="clearArithmeticInputs()">Clear</button>
+            
+            <h3>Result:</h3>
+            <p class="result" id="arithmeticResult">--</p>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
