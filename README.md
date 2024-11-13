@@ -24,10 +24,10 @@ Ensure you have a web browser that supports JavaScript enabled.
 
 1. **Clone this repository** to your local machine:
    ```bash
-   git clone https://github.com/yourusername/base-converter-calculator.git
+   git clone https://github.com/junayedhasansakib0/base-converter.git
 2. **Navigate to the project** directory:
    ```bash
-   cd base-converter-calculator
+   cd base-converter
 3. **Run the application:** Open `index.html` in your web browser
 
 
