@@ -70,35 +70,101 @@ function convertBase() {
 
 // Add another input field for arithmetic operations above the button
 function addNumberInput() {
-    let inputField = document.createElement("input");
-    inputField.type = "text";
-    inputField.placeholder = "Enter number";
-    inputField.classList.add("numberInput");
-    // inputField.setAttribute("oninput", "calculate()"); // Bind the instant calculation to new input
+    // Create a new input group
+    let inputGroup = document.createElement("div");
+    inputGroup.classList.add("input-group");
 
-    let numberInputsDiv = document.getElementById("numberInputs");
-    numberInputsDiv.insertBefore(inputField, document.querySelector(".add-number-button"));
+    // Create the number input field
+    let numberInput = document.createElement("input");
+    numberInput.type = "text";
+    numberInput.placeholder = "Enter number";
+    numberInput.classList.add("numberInput");
+
+    // Create the base input field for Different Bases mode
+    let baseInput = document.createElement("input");
+    baseInput.type = "number";
+    baseInput.placeholder = "Base";
+    baseInput.min = 2;
+    baseInput.max = 36;
+    baseInput.classList.add("numberBase");
+
+    // Append fields based on selected base mode
+    inputGroup.appendChild(numberInput);
+    if (document.querySelector('input[name="baseMode"]:checked').value === "different") {
+        inputGroup.appendChild(baseInput);
+    }
+
+    // Append the input group to the number inputs container
+    document.getElementById("numberInputs").insertBefore(inputGroup, document.querySelector(".add-number-button"));
 }
 
-// Perform arithmetic operations on multiple base numbers (supporting fractions)
+
+// Toggle Base Mode to show/hide individual base fields
+function toggleBaseMode() {
+    let isSameBase = document.querySelector('input[name="baseMode"]:checked').value === "same";
+    let globalBaseContainer = document.getElementById("globalBaseContainer");
+    let baseInputs = document.querySelectorAll(".numberBase");
+    let outputBaseContainer = document.getElementById("outputBaseContainer");
+
+
+    // Show or hide global base field and individual base inputs
+    globalBaseContainer.style.display = isSameBase ? "block" : "none";
+    baseInputs.forEach(input => input.style.display = isSameBase ? "none" : "inline-block");
+
+    // Show or hide output base field
+    outputBaseContainer.style.display = isSameBase ? "none" : "block";
+    
+
+    // Show or hide the global base field
+    globalBaseContainer.style.display = isSameBase ? "block" : "none";
+
+    // Show or hide individual base inputs next to each number based on selected mode
+    baseInputs.forEach(input => input.style.display = isSameBase ? "none" : "inline-block");
+
+    // If in Different Bases mode, ensure each input has a base input next to it
+    if (!isSameBase) {
+        document.querySelectorAll('.numberInput').forEach((input, index) => {
+            if (!input.nextElementSibling || !input.nextElementSibling.classList.contains("numberBase")) {
+                let baseInput = document.createElement("input");
+                baseInput.type = "number";
+                baseInput.placeholder = "Base";
+                baseInput.min = 2;
+                baseInput.max = 36;
+                baseInput.classList.add("numberBase");
+                input.parentNode.insertBefore(baseInput, input.nextSibling);
+            }
+        });
+    }
+}
+
+// Calculation function checks if global base is set
 function calculate() {
     let operation = document.getElementById("operation").value;
-    let base = parseInt(document.getElementById("arithmeticBase").value);
+    let isSameBase = document.querySelector('input[name="baseMode"]:checked').value === "same";
+    let globalBase = parseInt(document.getElementById("globalBase").value);
     let numberInputs = document.querySelectorAll(".numberInput");
+    let baseInputs = document.querySelectorAll(".numberBase");
+    let outputBase = parseInt(document.getElementById("outputBaseArithmetic").value);
 
-    if (isNaN(base) || base < 2 || base > 36) {
-        alert("Please enter a valid base (between 2 and 36).");
+    // Ensure valid global base in "Same Base" mode
+    if (isSameBase && (isNaN(globalBase) || globalBase < 2 || globalBase > 36)) {
+        alert("Please enter a valid base (2-36) for Same Base mode.");
         return;
     }
 
     let values = [];
     try {
-        numberInputs.forEach(input => {
-            let value = toDecimal(input.value.trim(), base);
-            if (isNaN(value)) throw "Invalid number for the specified base.";
-            values.push(value);
+        // Convert each number to decimal using global base or individual bases
+        numberInputs.forEach((input, index) => {
+            let base = isSameBase ? globalBase : parseInt(baseInputs[index].value);
+            if (isNaN(base) || base < 2 || base > 36) throw "Please enter a valid base (2-36).";
+
+            let decimalValue = toDecimal(input.value.trim(), base);
+            if (isNaN(decimalValue)) throw "Invalid number for the specified base.";
+            values.push(decimalValue);
         });
 
+        // Perform the specified operation
         let result;
         if (operation === "add") {
             result = values.reduce((a, b) => a + b, 0);
@@ -110,12 +176,16 @@ function calculate() {
             result = values.reduce((a, b) => a / b);
         }
 
-        // Display result in the specified base
-        document.getElementById("arithmeticResult").textContent = fromDecimal(result, base).toUpperCase();
+        // Display result in decimal or convert to global base if specified
+        document.getElementById("arithmeticResult").textContent = fromDecimal(result, isSameBase ? globalBase : 10).toUpperCase();
+
+        // Display result in the specified output base
+        document.getElementById("arithmeticResult").textContent = fromDecimal(result, outputBase).toUpperCase();
     } catch (error) {
         alert(error);
     }
 }
+
 
 // Clear all input fields in the conversion section
 function clearConversionInputs() {
@@ -128,33 +198,39 @@ function clearConversionInputs() {
     `;
 }
 
-// Clear all input fields in the arithmetic section
-// function clearArithmeticInputs() {
-//     document.querySelectorAll(".numberInput").forEach(input => input.value = "");
-//     document.getElementById("arithmeticResult").textContent = "--";
-//     let inputField = document.createElement("input");
-//     inputField.type = "text";
-//     inputField.placeholder = "Enter number";
-//     inputField.classList.add("numberInput");
-// }
 
-// Clear all input fields in the arithmetic section, keeping only the initial one
+// Clear all input fields in the arithmetic section and reset to initial state
 function clearArithmeticInputs() {
-    // Select all dynamically added input fields and remove them
-    const numberInputsDiv = document.getElementById("numberInputs");
-    numberInputsDiv.innerHTML = ""; // Clear all inputs
+    // Remove all input groups
+    let numberInputsDiv = document.getElementById("numberInputs");
+    numberInputsDiv.innerHTML = "";
 
-    // Re-create the original input field
-    const inputField = document.createElement("input");
-    inputField.type = "text";
-    inputField.placeholder = "Enter number";
-    inputField.classList.add("numberInput");
+    // Add initial input group with a number input field and, if needed, a base input field
+    let inputGroup = document.createElement("div");
+    inputGroup.classList.add("input-group");
 
-    // Append the original input field back to the container
-    numberInputsDiv.appendChild(inputField);
+    let numberInput = document.createElement("input");
+    numberInput.type = "text";
+    numberInput.placeholder = "Enter number";
+    numberInput.classList.add("numberInput");
+    inputGroup.appendChild(numberInput);
+
+    // Add base input if Different Bases mode is active
+    if (document.querySelector('input[name="baseMode"]:checked').value === "different") {
+        let baseInput = document.createElement("input");
+        baseInput.type = "number";
+        baseInput.placeholder = "Base";
+        baseInput.min = 2;
+        baseInput.max = 36;
+        baseInput.classList.add("numberBase");
+        inputGroup.appendChild(baseInput);
+    }
+
+    // Append the reset input group and add button back to the numberInputs container
+    numberInputsDiv.appendChild(inputGroup);
 
     // Add back the "Add Another Number" button
-    const addButton = document.createElement("button");
+    let addButton = document.createElement("button");
     addButton.classList.add("add-number-button");
     addButton.textContent = "Add Another Number";
     addButton.onclick = addNumberInput;
